@@ -1,23 +1,41 @@
 const gridContainer = document.querySelector(`#container`);
 
 function randomColor() {
-    return `hsl(${Math.floor(Math.random() *360)}, ${Math.floor(Math.random() * 100)}, ${Math.floor(Math.random() * 100)})`
+    return `rgba(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})`
 }
 
 for (i = 0; i < 256; i++) {
     let grid = document.createElement('div');
     grid.className = "grid-square";
-    
-    grid.addEventListener(`mouseover`, once() => {
-        grid.style.backgroundColor = `black`;
+    grid.style.filter = `brightness(1.0)`;
+
+    grid.addEventListener(`mouseover`, function (e) {
+        grid.style.backgroundColor = randomColor();
+        e.stopImmediatePropagation();
+    }, {
+        once: true,
     });
+
+
+
+
     grid.addEventListener(`mouseover`, () => {
-        if (grid.style.backgroundColor != `white`) {
-            grid.style.backgroundColor = randomColor();
+        let gridBrightnessInitial = window.getComputedStyle(grid).getPropertyValue(`filter`);
+        let gridBrightnessString = gridBrightnessInitial.slice(11, 14);
+        let gridBrightnessNum = parseFloat(gridBrightnessString)
+        
+        if (gridBrightnessInitial === `brightness(1)`) {
+            grid.style.filter = `brightness(0.9)`;
         }
-    })
+        else if (gridBrightnessNum > 0 && gridBrightnessNum < 1) {
+            let gridBrightnessNew = gridBrightnessNum - 0.1;
+            grid.style.filter = `brightness(${gridBrightnessNew})`;
+        }
+    });
+
+
     gridContainer.appendChild(grid);
-    
+
 };
 
 
@@ -27,9 +45,9 @@ const resetButton = document.querySelector(`#reset-button`);
 const body = document.querySelector(`body`);
 
 function removeAllChildNodes(parent) {
-        while (parent.firstChild) {
-            parent.removeChild(parent.firstChild);
-        }
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
 }
 
 resetButton.addEventListener(`click`, () => {
@@ -39,19 +57,41 @@ resetButton.addEventListener(`click`, () => {
         return alert(`Please enter a number less than or equal to 100.`)
     }
     gridContainer.style.removeProperty(`grid-template-columns`);
-    gridContainer.style.setProperty(`grid-template-columns`,`repeat(${userGridSize}, 1fr)`);
-    
+    gridContainer.style.setProperty(`grid-template-columns`, `repeat(${userGridSize}, 1fr)`);
+
 
     for (i = 0; i < (userGridSize * userGridSize); i++) {
         let grid = document.createElement('div');
         grid.className = "grid-square";
-        
 
-        grid.addEventListener(`mouseover`, () => {
-            grid.style.backgroundColor = `black`;
+
+        grid.addEventListener(`mouseover`, function (e) {
+            grid.style.backgroundColor = randomColor();
+            
+            e.stopImmediatePropagation();
+        }, {
+            once: true,
         });
-        gridContainer.appendChild(grid);
+    
+    
+    
+    
+        grid.addEventListener(`mouseover`, () => {
+            let gridBrightnessInitial = window.getComputedStyle(grid).getPropertyValue(`filter`);
+            let gridBrightnessString = gridBrightnessInitial.slice(11, 14);
+            let gridBrightnessNum = parseFloat(gridBrightnessString)
+            
+            if (gridBrightnessInitial === `brightness(1)`) {
+                grid.style.filter = `brightness(0.9)`;
+            }
+            else if (gridBrightnessNum > 0 && gridBrightnessNum < 1) {
+                let gridBrightnessNew = gridBrightnessNum - 0.1;
+                grid.style.filter = `brightness(${gridBrightnessNew})`;
+            }
+        });
         
+        gridContainer.appendChild(grid);
+
     };
 })
 
